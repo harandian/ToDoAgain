@@ -11,6 +11,8 @@
 
 @interface MasterViewController ()
 
+@property NSManagedObjectContext *context;
+
 
 
 @end
@@ -42,7 +44,7 @@
 
 
 - (void)insertNewObject:(id)sender {
-    NSManagedObjectContext *context = [self.fetchedResultsController managedObjectContext];
+    self.context = [self.fetchedResultsController managedObjectContext];
     
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Add a new task" message:@"This is where you setup your tasks" preferredStyle:UIAlertControllerStyleAlert];
     
@@ -76,14 +78,14 @@
     [alert addAction:[UIAlertAction actionWithTitle:@"Save" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
        
         NSLog(@"name of the Task is: %@", taskTitleField.text);
-        Task *task = [[Task alloc] initWithContext:context];
+        Task *task = [[Task alloc] initWithContext:self.context];
         task.taskTitle = taskTitleField.text;
         task.taskDescription = taskDescField.text;
         task.taskPriority = [taskPriorityNumber.text intValue];
         
          
         NSError *error = nil;
-        if (![context save:&error]) {
+        if (![self.context save:&error]) {
             // Replace this implementation with code to handle the error appropriately.
             // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             NSLog(@"Unresolved error %@, %@", error, error.userInfo);
@@ -269,6 +271,13 @@
     //NSManagedObjectContext *context = [self.fetchedResultsController managedObjectContext];
     
     currentTask.taskDescription = taskDescription;
-    
+    NSError *error = nil;
+    if (![self.context save:&error]) {
+        // Replace this implementation with code to handle the error appropriately.
+        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+        NSLog(@"Unresolved error %@, %@", error, error.userInfo);
+        abort();
+    }
+
     }
 @end
